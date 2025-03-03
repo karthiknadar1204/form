@@ -2,7 +2,7 @@ import React from "react";
 import { fetchAllResponseByFormId } from "@/actions/form.action";
 import { FormBlockInstance } from "@/@types/form-block.type";
 import { Button } from "@/components/ui/button";
-import { Link, FileJson, BarChart, ExternalLink } from "lucide-react";
+import { Link, FileJson, BarChart, ExternalLink, Bot } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import AllReponds from "../_components/AllReponds";
 import ChatPanel from "../_components/ChatPanel";
@@ -45,6 +45,15 @@ const Responds = async ({ params }: { params: { formId: string } }) => {
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <ViewJsonButton responses={responses} blocks={blocks} />
               
+              <Button
+                variant="outline"
+                className="flex items-center gap-2"
+                id="open-chat-panel"
+              >
+                <Bot className="w-4 h-4" />
+                AI Analysis
+              </Button>
+              
               <a
                 href={`${process.env.NEXT_PUBLIC_APP_URL}/public/submit-form/${formId}`}
                 target="_blank"
@@ -70,7 +79,7 @@ const Responds = async ({ params }: { params: { formId: string } }) => {
           </div>
         </div>
       </div>
-      <ChatPanel formId={formId} blocks={blocks} responses={responses} />
+      <ChatPanel formId={formId} blocks={blocks} responses={responses} hideFloatingButton={true} />
     </main>
   );
 };
