@@ -19,6 +19,7 @@ interface ChatPanelProps {
     createdAt: Date;
     jsonReponse: string;
   }[];
+  hideFloatingButton?: boolean;
 }
 
 interface Message {
@@ -37,7 +38,7 @@ interface Message {
   };
 }
 
-export const ChatPanel = ({ formId, blocks, responses }: ChatPanelProps) => {
+export const ChatPanel = ({ formId, blocks, responses, hideFloatingButton = false }: ChatPanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -47,6 +48,18 @@ export const ChatPanel = ({ formId, blocks, responses }: ChatPanelProps) => {
 
   useEffect(() => {
     console.log('ChatPanel blocks:', blocks);
+    
+    // Connect the header button to open the chat panel
+    const headerButton = document.getElementById('open-chat-panel');
+    if (headerButton) {
+      headerButton.addEventListener('click', () => setIsOpen(true));
+    }
+    
+    return () => {
+      if (headerButton) {
+        headerButton.removeEventListener('click', () => setIsOpen(true));
+      }
+    };
   }, [blocks]);
 
   const scrollToBottom = () => {
@@ -193,19 +206,33 @@ export const ChatPanel = ({ formId, blocks, responses }: ChatPanelProps) => {
 
   return (
     <>
-      <Button
-        size="icon"
-        className={cn(
-          "fixed bottom-4 right-4 rounded-full p-3 sm:p-4 shadow-lg z-50",
-          isOpen ? "bg-red-500 hover:bg-red-600" : "bg-primary hover:bg-primary/90"
-        )}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Bot className="h-5 w-5 sm:h-6 sm:w-6" />}
-      </Button>
+      {!hideFloatingButton && (
+        <Button
+          size="icon"
+          className={cn(
+            "fixed bottom-4 right-4 rounded-full p-3 sm:p-4 shadow-lg z-50",
+            isOpen ? "bg-red-500 hover:bg-red-600" : "bg-primary hover:bg-primary/90"
+          )}
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Bot className="h-5 w-5 sm:h-6 sm:w-6" />}
+        </Button>
+      )}
 
       {isOpen && (
         <Card className="fixed bottom-20 right-4 w-[calc(100vw-32px)] sm:w-[400px] h-[500px] p-3 sm:p-4 shadow-xl flex flex-col z-40">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-medium">AI Analysis Assistant</h3>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8" 
+              onClick={() => setIsOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          
           <div className="flex-1 overflow-y-auto mb-4 space-y-4 p-2">
             {messages.map(msg => (
               <div 
